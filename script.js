@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rpm: 60,        // 1 RPM = 60 RPS
         rph: 3600,      // 1 RPH = 3600 RPS
         rpd: 86400,     // 1 RPD = 86400 RPS
+        rpmth: 2592000, // 1 RPMth = 2592000 RPS (30 days)
         rpy: 31536000   // 1 RPY = 31536000 RPS
     };
 
