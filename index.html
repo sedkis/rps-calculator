@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPS Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>RPS Calculator</h1>
+        <div class="calculator">
+            <div class="input-group">
+                <input type="text" id="inputValue" placeholder="Enter value" step="any">
+                <select id="fromUnit">
+                    <option value="rps">Requests per Second</option>
+                    <option value="rpm">Requests per Minute</option>
+                    <option value="rph">Requests per Hour</option>
+                    <option value="rpd">Requests per Day</option>
+                    <option value="rpy">Requests per Year</option>
+                </select>
+            </div>
+            <div class="conversion-arrows">⇄</div>
+            <div class="input-group">
+                <input type="text" id="outputValue" placeholder="Result" readonly>
+                <select id="toUnit">
+                    <option value="rps">Requests per Second</option>
+                    <option value="rpm">Requests per Minute</option>
+                    <option value="rph">Requests per Hour</option>
+                    <option value="rpd">Requests per Day</option>
+                    <option value="rpy">Requests per Year</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
