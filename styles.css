@@ -47,11 +47,11 @@ input, select {
 }
 
 input {
-    width: 201px;
+    width: 150px;
 }
 
 select {
-    flex: 1;
+    flex: 0.8;
     background-color: white;
     cursor: pointer;
 }
