@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const outputValue = document.getElementById('outputValue');
     const fromUnit = document.getElementById('fromUnit');
     const toUnit = document.getElementById('toUnit');
+    const inputReadable = document.getElementById('inputReadable');
 
     // Conversion rates to RPS (requests per second)
     const conversionRates = {
@@ -22,6 +23,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function getHumanReadableNumber(num) {
+        const absNum = Math.abs(num);
+        if (absNum >= 1e12) {
+            return `${(num / 1e12).toFixed(2)} trillion`;
+        } else if (absNum >= 1e9) {
+            return `${(num / 1e9).toFixed(2)} billion`;
+        } else if (absNum >= 1e6) {
+            return `${(num / 1e6).toFixed(2)} million`;
+        } else if (absNum >= 1e3) {
+            return `${(num / 1e3).toFixed(2)} thousand`;
+        } else {
+            return num.toFixed(2);
+        }
+    }
+
+    function formatInput(value) {
+        // Remove all non-numeric characters except decimal point
+        const numericValue = value.replace(/[^\d.]/g, '');
+        
+        // Ensure only one decimal point
+        const parts = numericValue.split('.');
+        if (parts.length > 2) {
+            parts.pop();
+        }
+        
+        // Format the whole number part with commas
+        const wholeNumber = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        
+        // Reconstruct the number with decimal if it exists
+        return parts.length > 1 ? `${wholeNumber}.${parts[1]}` : wholeNumber;
+    }
+
+    function updateInputReadable() {
+        const input = parseFloat(inputValue.value.replace(/,/g, ''));
+        if (!isNaN(input)) {
+            inputReadable.textContent = `(${getHumanReadableNumber(input)})`;
+        } else {
+            inputReadable.textContent = '';
+        }
+    }
+
     function convert() {
         // Remove commas and parse the input value
         const input = parseFloat(inputValue.value.replace(/,/g, ''));
@@ -37,12 +79,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // Calculate the result
         const result = input * (toRate / fromRate);
         
-        // Display the formatted result directly
-        outputValue.value = formatNumber(result);
+        // Display the formatted result with human readable format
+        outputValue.value = `${formatNumber(result)} (${getHumanReadableNumber(result)})`;
     }
 
-    // Add event listeners for real-time conversion
-    inputValue.addEventListener('input', convert);
+    // Format input as user types
+    inputValue.addEventListener('input', (e) => {
+        const cursorPosition = e.target.selectionStart;
+        const oldLength = e.target.value.length;
+        
+        // Format the input
+        e.target.value = formatInput(e.target.value);
+        
+        // Adjust cursor position
+        const newLength = e.target.value.length;
+        const newPosition = cursorPosition + (newLength - oldLength);
+        e.target.setSelectionRange(newPosition, newPosition);
+        
+        // Update input readable format
+        updateInputReadable();
+        
+        // Perform conversion
+        convert();
+    });
+
+    // Add event listeners for unit changes
     fromUnit.addEventListener('change', convert);
     toUnit.addEventListener('change', convert);
 

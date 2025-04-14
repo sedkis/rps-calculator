@@ -47,7 +47,7 @@ input, select {
 }
 
 input {
-    flex: 2;
+    width: 200px;
 }
 
 select {
@@ -67,6 +67,12 @@ input:focus, select:focus {
     font-size: 1.5rem;
     color: #666;
     margin: 0.5rem 0;
+}
+
+.readable-format {
+    color: #666;
+    font-size: 0.9em;
+    margin-left: 5px;
 }
 
 @media (max-width: 480px) {
