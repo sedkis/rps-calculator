@@ -1,18 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
     const inputValue = document.getElementById('inputValue');
-    const outputValue = document.getElementById('outputValue');
     const fromUnit = document.getElementById('fromUnit');
-    const toUnit = document.getElementById('toUnit');
     const inputReadable = document.getElementById('inputReadable');
+    const resultsContainer = document.getElementById('results');
+
+    const units = [
+        { key: 'rps', label: 'Requests per Second' },
+        { key: 'rpm', label: 'Requests per Minute' },
+        { key: 'rph', label: 'Requests per Hour' },
+        { key: 'rpd', label: 'Requests per Day' },
+        { key: 'rpmth', label: 'Requests per Month' },
+        { key: 'rpy', label: 'Requests per Year' },
+    ];
 
     // Conversion rates to RPS (requests per second)
     const conversionRates = {
         rps: 1,
-        rpm: 60,        // 1 RPM = 60 RPS
-        rph: 3600,      // 1 RPH = 3600 RPS
-        rpd: 86400,     // 1 RPD = 86400 RPS
-        rpmth: 2592000, // 1 RPMth = 2592000 RPS (30 days)
-        rpy: 31536000   // 1 RPY = 31536000 RPS
+        rpm: 60,
+        rph: 3600,
+        rpd: 86400,
+        rpmth: 2592000,
+        rpy: 31536000
     };
 
     function formatNumber(num) {
@@ -40,19 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function formatInput(value) {
-        // Remove all non-numeric characters except decimal point
         const numericValue = value.replace(/[^\d.]/g, '');
-        
-        // Ensure only one decimal point
         const parts = numericValue.split('.');
         if (parts.length > 2) {
             parts.pop();
         }
-        
-        // Format the whole number part with commas
         const wholeNumber = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        
-        // Reconstruct the number with decimal if it exists
         return parts.length > 1 ? `${wholeNumber}.${parts[1]}` : wholeNumber;
     }
 
@@ -66,48 +67,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function convert() {
-        // Remove commas and parse the input value
         const input = parseFloat(inputValue.value.replace(/,/g, ''));
-        
-        if (isNaN(input)) {
-            outputValue.value = '';
-            return;
-        }
-
         const fromRate = conversionRates[fromUnit.value];
-        const toRate = conversionRates[toUnit.value];
-        
-        // Calculate the result
-        const result = input * (toRate / fromRate);
-        
-        // Display the formatted result with human readable format
-        outputValue.value = `${formatNumber(result)} (${getHumanReadableNumber(result)})`;
+
+        resultsContainer.innerHTML = units
+            .filter(u => u.key !== fromUnit.value)
+            .map(u => {
+                const toRate = conversionRates[u.key];
+                const result = isNaN(input) ? 0 : input * (toRate / fromRate);
+                const valueText = isNaN(input) ? '—' : formatNumber(result);
+                const readableText = isNaN(input) ? '' : `(${getHumanReadableNumber(result)})`;
+
+                return `<div class="result-row">
+                    <span class="result-label">${u.label}</span>
+                    <span class="result-value">${valueText}</span>
+                    <span class="result-readable">${readableText}</span>
+                </div>`;
+            })
+            .join('');
     }
 
-    // Format input as user types
     inputValue.addEventListener('input', (e) => {
         const cursorPosition = e.target.selectionStart;
         const oldLength = e.target.value.length;
-        
-        // Format the input
         e.target.value = formatInput(e.target.value);
-        
-        // Adjust cursor position
         const newLength = e.target.value.length;
         const newPosition = cursorPosition + (newLength - oldLength);
         e.target.setSelectionRange(newPosition, newPosition);
-        
-        // Update input readable format
         updateInputReadable();
-        
-        // Perform conversion
         convert();
     });
 
-    // Add event listeners for unit changes
     fromUnit.addEventListener('change', convert);
-    toUnit.addEventListener('change', convert);
 
-    // Initial conversion
     convert();
-}); 
+});
